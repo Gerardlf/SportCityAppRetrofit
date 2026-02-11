@@ -55,4 +55,10 @@ sealed class ScreenNavigation(val route: String) {
                     "${Uri.encode(hora)}"
         }
     }
+
+
+    //Pantalla registro
+    object Register: ScreenNavigation("register")
+
+
 }
