@@ -7,4 +7,5 @@
     <string name="introduce_usuario">Introduce tu email o usuario</string>
     <string name="campo_obligatorio">Campo obligatorio</string>
     <string name="contrasena">Introduce tu contraseña</string>
+    <string name="pantalla_de_registro">Pantalla de Registro</string>
 </resources>
