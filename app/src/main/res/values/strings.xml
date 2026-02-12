@@ -8,4 +8,7 @@
     <string name="campo_obligatorio">Campo obligatorio</string>
     <string name="contrasena">Introduce tu contraseña</string>
     <string name="pantalla_de_registro">Pantalla de Registro</string>
+    <string name="correo_electr_nico">Correo electrónico</string>
+    <string name="contrase_a">Contraseña</string>
+    <string name="repite_la_contrasena">Repite la contraseña</string>
 </resources>
