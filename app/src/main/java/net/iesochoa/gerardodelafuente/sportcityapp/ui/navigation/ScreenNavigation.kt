@@ -58,7 +58,7 @@ sealed class ScreenNavigation(val route: String) {
 
 
     //Pantalla registro
-    object Register: ScreenNavigation("register")
+    object Registro: ScreenNavigation("registro")
 
 
 }

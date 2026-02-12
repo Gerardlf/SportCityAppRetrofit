@@ -12,6 +12,7 @@ import net.iesochoa.gerardodelafuente.sportcityapp.ui.screens.DetallePistaScreen
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.screens.HomeScreen
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.screens.MisReservasScreen
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.screens.PistasDeporteScreen
+import net.iesochoa.gerardodelafuente.sportcityapp.ui.screens.RegistroScreen
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.screens.ReservaFormScreen
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.screens.loginScreen
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.viewModel.PistasViewModel
@@ -127,6 +128,14 @@ fun SportCityNavHost(
                 pistaNombre = pistaNombre,
                 hora = hora
             )
+        }
+
+        //Pantalla registro
+
+        composable(
+            route = ScreenNavigation.Registro.route
+        ){
+            RegistroScreen(navController = navController)
         }
 
 

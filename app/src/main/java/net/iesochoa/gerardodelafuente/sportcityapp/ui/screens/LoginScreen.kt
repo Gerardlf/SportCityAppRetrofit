@@ -4,6 +4,8 @@ package net.iesochoa.gerardodelafuente.sportcityapp.ui.screens
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -51,6 +53,7 @@ import net.iesochoa.gerardodelafuente.sportcityapp.ui.viewModel.LoginViewModel
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.ColorBackground
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.ColorError
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.ColorPrimary
+import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.ColorSecondary
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.ColorTextPrimary
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.ColorTextSecondary
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.TextFieldBackground
@@ -276,6 +279,27 @@ fun loginScreen(
                     .fillMaxWidth(),
                 textAlign = TextAlign.End
             )
+            Spacer(modifier = Modifier.height(30.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "¿No tienes cuenta? ",
+                    color = ColorSecondary,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "Regístrate aquí",
+                    color = ColorPrimary,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable{
+                        navController.navigate(ScreenNavigation.Registro.route)
+                    }
+                )
+            }
             Spacer(modifier = Modifier.height(30.dp))
 
             Button(

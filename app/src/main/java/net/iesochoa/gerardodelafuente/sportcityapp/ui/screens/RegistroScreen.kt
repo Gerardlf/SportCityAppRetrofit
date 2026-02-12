@@ -1,5 +1,4 @@
 package net.iesochoa.gerardodelafuente.sportcityapp.ui.screens
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,7 +18,7 @@ import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.ColorBackground
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.ColorTextPrimary
 
 @Composable
-fun RegisterScreen(
+fun RegistroScreen(
     navController: NavController
 
 ){
