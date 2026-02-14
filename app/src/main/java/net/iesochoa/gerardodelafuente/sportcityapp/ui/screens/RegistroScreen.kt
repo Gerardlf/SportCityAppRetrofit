@@ -27,6 +27,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,8 +39,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import net.iesochoa.gerardodelafuente.sportcityapp.R
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.ColorBackground
@@ -48,10 +52,12 @@ import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.ColorTextPrimary
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.ColorTextSecondary
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.TextFieldBackground
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.TextFieldBorder
+import net.iesochoa.gerardodelafuente.sportcityapp.ui.viewModel.RegistroViewModel
 
 @Composable
 fun RegistroScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: RegistroViewModel = viewModel()
 
 ) {
 
@@ -62,6 +68,15 @@ fun RegistroScreen(
 
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
+
+    //viewmodel
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState.isRegistrado) {
+        if (uiState.isRegistrado) {
+            navController.popBackStack()
+        }
+    }
 
 
     Column(
@@ -289,8 +304,14 @@ fun RegistroScreen(
                         return@Button
                     }
 
-                    //llamar a firebase?????
+                    //llamar al view model para que vaya a auth y ejecute el metodo para firebas
+                    viewModel.onRegisterClicked(
+                        email = email,
+                        password = password
+                    )
+
                 },
+                enabled = !uiState.isLoading,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(60.dp),
@@ -300,10 +321,22 @@ fun RegistroScreen(
                 )
             ) {
                 Text(
-                    text = "Crear cuenta",
+                    text = if (uiState.isLoading){
+                        "Creando cuenta....."
+                    } else "Crear cuenta",
                     color = ColorBackground,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
+                )
+            }
+            uiState.errorMessage?.let {  error ->
+                Spacer( modifier = Modifier.height(8.dp))
+                Text(
+                    text = error,
+                    color = ColorError,
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
