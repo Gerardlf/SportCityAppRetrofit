@@ -19,7 +19,8 @@ class AuthRepository(
                 if (task.isSuccessful) {
                     onResult(true, null)
                 } else {
-                    val message = task.exception?.message ?: "Error desconocido al iniciar la sesión"
+                    val message =
+                        task.exception?.message ?: "Error desconocido al iniciar la sesión"
                     onResult(false, message)
                 }
             }
@@ -35,5 +36,20 @@ class AuthRepository(
         firebaseAuth.signOut()
     }
 
+    //REGISTROO
+    fun registro(
+        email: String,
+        password: String,
+        onResult: (isSuccess: Boolean, errorMessage: String?) -> Unit
+    ) {
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    onResult(true, null)
+                } else {
+                    onResult(false, task.exception?.message)
+                }
+            }
+    }
 
 }
