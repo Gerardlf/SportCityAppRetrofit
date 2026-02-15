@@ -100,15 +100,26 @@ fun BottomNavBar(navController: NavController,
             NavegItem(
                 icon = Icons.Filled.Person,
                 label = "Perfil",
-                selected = false,
-                onClick = { // de momento no tengo pantalla
+                selected = selectedScreen == ScreenNavigation.Perfil,
+                onClick = {
+                    navController.navigate(ScreenNavigation.Perfil.route){
+                        popUpTo (ScreenNavigation.Home.route){
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
             NavegItem(
                 icon = Icons.Filled.Help,
                 label = "Ayuda",
-                selected = false,
-                onClick = { // de momento no tengo pantalla
+                selected = selectedScreen == ScreenNavigation.Ayuda,
+                onClick = {
+                    navController.navigate(ScreenNavigation.Ayuda.route){
+                        popUpTo(ScreenNavigation.Home.route){
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

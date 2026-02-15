@@ -7,10 +7,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import net.iesochoa.gerardodelafuente.sportcityapp.ui.screens.AyudaScreen
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.screens.ConfirmacionReservaScreen
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.screens.DetallePistaScreen
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.screens.HomeScreen
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.screens.MisReservasScreen
+import net.iesochoa.gerardodelafuente.sportcityapp.ui.screens.PerfilScreen
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.screens.PistasDeporteScreen
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.screens.RegistroScreen
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.screens.ReservaFormScreen
@@ -136,6 +138,20 @@ fun SportCityNavHost(
             route = ScreenNavigation.Registro.route
         ){
             RegistroScreen(navController = navController)
+        }
+
+        //pantalla perfil
+        composable(
+            route = ScreenNavigation.Perfil.route
+        ){
+            PerfilScreen(navController = navController)
+        }
+
+        //Ayuda
+        composable(
+            route = ScreenNavigation.Ayuda.route
+        ){
+            AyudaScreen(navController = navController)
         }
 
 
