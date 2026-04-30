@@ -3,7 +3,7 @@ package net.iesochoa.gerardodelafuente.sportcityapp.model
 //data class de reserva
 data class Reserva(
 
-    val id: Int,
+    val id: Int? = null,
     val pistaId: Int,
     val pistaNombre: String,
     val fecha: String,
