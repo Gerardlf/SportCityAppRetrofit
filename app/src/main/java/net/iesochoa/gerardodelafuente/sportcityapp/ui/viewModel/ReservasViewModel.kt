@@ -12,27 +12,37 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.iesochoa.gerardodelafuente.sportcityapp.SportCityApp
 import net.iesochoa.gerardodelafuente.sportcityapp.data.FakeReservasRepository
+import net.iesochoa.gerardodelafuente.sportcityapp.data.repository.ReservasApiRepository
 import net.iesochoa.gerardodelafuente.sportcityapp.data.repository.ReservasRoomRepository
 import net.iesochoa.gerardodelafuente.sportcityapp.model.Reserva
 import net.iesochoa.gerardodelafuente.sportcityapp.model.ReservasUiState
+
 //View model de las reservas
 class ReservasViewModel(
     application: Application
-) : AndroidViewModel(application)
-{
+) : AndroidViewModel(application) {
     private val reservasRepository: ReservasRoomRepository =
         (application as SportCityApp).reservasRoomRepository
+
+    private val reservasApiRepository: ReservasApiRepository =
+        (application as SportCityApp).reservasApiRepository
 
     private val _uiState = MutableStateFlow(ReservasUiState())
     val uiState: StateFlow<ReservasUiState> = _uiState.asStateFlow()
 
 
     init {
+        cargarReservas()
+    }
+
+    //Cargar reservas desde la api
+    fun cargarReservas() {
         viewModelScope.launch {
-            reservasRepository.reservas.collect { lista->
-                _uiState.update { actual ->
-                    actual.copy( reservas =  lista)
-                }
+            val reservasApi = reservasApiRepository.getAllReservas()
+            _uiState.update { actual ->
+                actual.copy(
+                    reservas = reservasApi
+                )
             }
         }
     }
@@ -49,7 +59,7 @@ class ReservasViewModel(
         deporte: String
     ) {
         val reserva = Reserva(
-            id = 0,
+            id = null,
             pistaId = pistaId,
             pistaNombre = pistaNombre,
             fecha = fecha,
@@ -62,11 +72,11 @@ class ReservasViewModel(
 
         //añado reserva
         viewModelScope.launch {
-            reservasRepository.addReserva(reserva)
+            reservasApiRepository.addReserva(reserva)
         }
     }
 
-    fun borrarReserva(reserva: Reserva){
+    fun borrarReserva(reserva: Reserva) {
         viewModelScope.launch {
             reservasRepository.deleteReserva(reserva)
         }

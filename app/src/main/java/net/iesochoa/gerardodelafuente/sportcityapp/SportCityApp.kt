@@ -9,6 +9,7 @@ import net.iesochoa.gerardodelafuente.sportcityapp.data.local.SportCityDataBase
 import net.iesochoa.gerardodelafuente.sportcityapp.data.remote.RetrofitClient
 import net.iesochoa.gerardodelafuente.sportcityapp.data.repository.PistasApiRepository
 import net.iesochoa.gerardodelafuente.sportcityapp.data.repository.PistasRoomRepository
+import net.iesochoa.gerardodelafuente.sportcityapp.data.repository.ReservasApiRepository
 import net.iesochoa.gerardodelafuente.sportcityapp.data.repository.ReservasRoomRepository
 import net.iesochoa.gerardodelafuente.sportcityapp.model.Pista
 
@@ -26,6 +27,7 @@ class SportCityApp : Application() {
         PistasRoomRepository(database.pistaDao())
     }
 
+    //repositorio de pistas API
     val pistasApiRepository by lazy {
         PistasApiRepository(RetrofitClient.apiService)
     }
@@ -34,6 +36,11 @@ class SportCityApp : Application() {
     //repositorio de reservas
     val reservasRoomRepository by lazy {
         ReservasRoomRepository(database.reservaDao())
+    }
+
+    //repositorio de reservas API
+    val reservasApiRepository by lazy {
+        ReservasApiRepository(RetrofitClient.apiService)
     }
 
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
