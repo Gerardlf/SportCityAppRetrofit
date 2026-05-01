@@ -15,6 +15,7 @@ data class ReservaEntity(
     val nombreCliente: String,
     val telefonoCliente: String,
     val comentario: String?= null,
-    val deporte: String
+    val deporte: String,
+
 
 )

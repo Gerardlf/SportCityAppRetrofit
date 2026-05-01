@@ -5,6 +5,7 @@ import net.iesochoa.gerardodelafuente.sportcityapp.model.Reserva
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface ApiService {
 
@@ -13,6 +14,11 @@ interface ApiService {
 
     @GET("api/reservas")
     suspend fun getReservas(): List<Reserva>
+
+    @GET("api/reservas/usuario/{usuarioId}")
+    suspend fun getReservasPorUsuario(
+        @Path("usuarioId") usuarioId: String
+    ): List<Reserva>
 
 
     @POST("api/reservas")

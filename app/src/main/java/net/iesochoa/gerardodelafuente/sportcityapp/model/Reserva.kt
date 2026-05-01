@@ -12,4 +12,5 @@ data class Reserva(
     val telefonoCliente: String,
     val comentario: String? = null,
     val deporte: String,
+    val usuarioId: String? = null
 )

@@ -5,6 +5,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,6 +28,8 @@ class ReservasViewModel(
     private val reservasApiRepository: ReservasApiRepository =
         (application as SportCityApp).reservasApiRepository
 
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+
     private val _uiState = MutableStateFlow(ReservasUiState())
     val uiState: StateFlow<ReservasUiState> = _uiState.asStateFlow()
 
@@ -35,10 +38,18 @@ class ReservasViewModel(
         cargarReservas()
     }
 
-    //Cargar reservas desde la api
+    //Cargar reservas desde la api del usuario que ha iniciado sesion
     fun cargarReservas() {
+
+        val usuarioId = auth.currentUser?.uid
+        if (usuarioId == null) {
+            _uiState.update { actual ->
+                actual.copy(reservas = emptyList())
+            }
+            return
+        }
         viewModelScope.launch {
-            val reservasApi = reservasApiRepository.getAllReservas()
+            val reservasApi = reservasApiRepository.getReservasPorUsuario(usuarioId)
             _uiState.update { actual ->
                 actual.copy(
                     reservas = reservasApi
@@ -58,6 +69,8 @@ class ReservasViewModel(
         comentario: String?,
         deporte: String
     ) {
+        //obtengo el usuario de firebase
+        val usuarioId = auth.currentUser?.uid ?: return
         val reserva = Reserva(
             id = null,
             pistaId = pistaId,
@@ -67,9 +80,9 @@ class ReservasViewModel(
             nombreCliente = nombreCliente,
             telefonoCliente = telefonoCliente,
             comentario = comentario,
-            deporte = deporte
+            deporte = deporte,
+            usuarioId = usuarioId
         )
-
         //añado reserva
         viewModelScope.launch {
             reservasApiRepository.addReserva(reserva)
