@@ -122,7 +122,7 @@ fun HomeScreen(
                     ),
                     onClick = {
                         navController.navigate(
-                            ScreenNavigation.PistasDeporte.createRoute("Fútbol 7")
+                            ScreenNavigation.PistasDeporte.createRoute("Futbol 7")
                         )
                     }
                 ) {
@@ -158,7 +158,7 @@ fun HomeScreen(
 
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Text(
-                                    text = "Fúbol 7",
+                                    text = "Fútbol 7",
                                     color = Color.White,
                                     style = MaterialTheme.typography.titleLarge,
                                     fontWeight = FontWeight.Bold
@@ -222,7 +222,7 @@ fun HomeScreen(
                     ),
                     onClick = {
                         navController.navigate(
-                            ScreenNavigation.PistasDeporte.createRoute("Pádel")
+                            ScreenNavigation.PistasDeporte.createRoute("Padel")
                         )
                     }
                 ) {
@@ -297,11 +297,13 @@ fun HomeScreen(
                 }
             }
         }
-        BottomNavBar(navController = navController,
+        BottomNavBar(
+            navController = navController,
             selectedScreen = ScreenNavigation.Home,
             modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 40.dp))
+                .fillMaxWidth()
+                .padding(bottom = 40.dp)
+        )
     }
 }
 

@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.iesochoa.gerardodelafuente.sportcityapp.SportCityApp
+import net.iesochoa.gerardodelafuente.sportcityapp.data.repository.PistasApiRepository
 import net.iesochoa.gerardodelafuente.sportcityapp.model.PistasUistate
-import net.iesochoa.gerardodelafuente.sportcityapp.data.repository.PistasRoomRepository
 
 
 //View model para las pistas
@@ -19,8 +19,8 @@ class PistasViewModel(
 ) : AndroidViewModel(application) {
 
     //repo room
-    private val pistasRepository: PistasRoomRepository =
-        (application as SportCityApp).pistasRoomRepository
+    private val pistasRepository: PistasApiRepository =
+        (application as SportCityApp).pistasApiRepository
 
 
     private val _uiState = MutableStateFlow(PistasUistate())

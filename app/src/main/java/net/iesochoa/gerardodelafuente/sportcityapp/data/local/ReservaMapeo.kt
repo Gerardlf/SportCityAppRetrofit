@@ -8,7 +8,7 @@ fun ReservaEntity.toDomain(): Reserva =
         pistaId = pistaId,
         pistaNombre = pistaNombre,
         fecha = fecha,
-        hora=hora,
+        hora = hora,
         nombreCliente = nombreCliente,
         telefonoCliente = telefonoCliente,
         comentario = comentario,
@@ -17,9 +17,9 @@ fun ReservaEntity.toDomain(): Reserva =
 
 // De modelo de dominio a Entity para guardar en la base de datos
 
-fun Reserva.toEntity(): ReservaEntity=
+fun Reserva.toEntity(): ReservaEntity =
     ReservaEntity(
-        id = id,
+        id = id ?: 0,
         pistaId = pistaId,
         pistaNombre = pistaNombre,
         fecha = fecha,

@@ -6,6 +6,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import net.iesochoa.gerardodelafuente.sportcityapp.data.local.SportCityDataBase
+import net.iesochoa.gerardodelafuente.sportcityapp.data.remote.RetrofitClient
+import net.iesochoa.gerardodelafuente.sportcityapp.data.repository.PistasApiRepository
 import net.iesochoa.gerardodelafuente.sportcityapp.data.repository.PistasRoomRepository
 import net.iesochoa.gerardodelafuente.sportcityapp.data.repository.ReservasRoomRepository
 import net.iesochoa.gerardodelafuente.sportcityapp.model.Pista
@@ -23,6 +25,12 @@ class SportCityApp : Application() {
     val pistasRoomRepository by lazy {
         PistasRoomRepository(database.pistaDao())
     }
+
+    val pistasApiRepository by lazy {
+        PistasApiRepository(RetrofitClient.apiService)
+    }
+
+
     //repositorio de reservas
     val reservasRoomRepository by lazy {
         ReservasRoomRepository(database.reservaDao())
