@@ -15,8 +15,10 @@ import net.iesochoa.gerardodelafuente.sportcityapp.SportCityApp
 import net.iesochoa.gerardodelafuente.sportcityapp.data.FakeReservasRepository
 import net.iesochoa.gerardodelafuente.sportcityapp.data.repository.ReservasApiRepository
 import net.iesochoa.gerardodelafuente.sportcityapp.data.repository.ReservasRoomRepository
+import net.iesochoa.gerardodelafuente.sportcityapp.model.RequestStatus
 import net.iesochoa.gerardodelafuente.sportcityapp.model.Reserva
 import net.iesochoa.gerardodelafuente.sportcityapp.model.ReservasUiState
+import java.lang.Exception
 
 //View model de las reservas
 class ReservasViewModel(
@@ -42,19 +44,40 @@ class ReservasViewModel(
     fun cargarReservas() {
 
         val usuarioId = auth.currentUser?.uid
+
         if (usuarioId == null) {
             _uiState.update { actual ->
-                actual.copy(reservas = emptyList())
+                actual.copy(
+                    reservas = emptyList(),
+                    status = RequestStatus.Error("No hay usuario iniciado")
+                )
             }
             return
         }
         viewModelScope.launch {
-            val reservasApi = reservasApiRepository.getReservasPorUsuario(usuarioId)
+
             _uiState.update { actual ->
                 actual.copy(
-                    reservas = reservasApi
+                    status = RequestStatus.Loading
                 )
             }
+            try {
+                val reservasApi = reservasApiRepository.getReservasPorUsuario(usuarioId)
+
+                _uiState.update { actual ->
+                    actual.copy(
+                        reservas = reservasApi,
+                        status = RequestStatus.Success
+                    )
+                }
+            }catch (e: Exception){
+                _uiState.update { actual ->
+                    actual.copy(
+                        status = RequestStatus.Error("No se pudieron cargar las reservas. Render puede estar iniciandose...")
+                    )
+                }
+            }
+
         }
     }
 

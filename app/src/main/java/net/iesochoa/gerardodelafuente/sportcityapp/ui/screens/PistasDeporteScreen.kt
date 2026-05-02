@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.SportsBasketball
 import androidx.compose.material.icons.filled.SportsSoccer
 import androidx.compose.material.icons.filled.SportsTennis
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -49,7 +50,7 @@ import net.iesochoa.gerardodelafuente.sportcityapp.ui.viewModel.PistasViewModel
 @Composable
 fun PistasDeporteScreen(
     navController: NavController,
-    deporte:String,
+    deporte: String,
     viewModel: PistasViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -98,7 +99,7 @@ fun PistasDeporteScreen(
                     contentDescription = "Volver atras",
                     tint = ColorPrimary,
                     modifier = Modifier
-                        .clickable{
+                        .clickable {
                             navController.popBackStack()
                         }
                 )
@@ -119,28 +120,72 @@ fun PistasDeporteScreen(
 
                 when {
                     uiState.isLoading -> {
-
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 32.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            CircularProgressIndicator(
-                                color = ColorPrimary
-                            )
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                                CircularProgressIndicator(
+                                    color = ColorPrimary
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    text = "Cargando pistas...",
+                                    color = ColorSecondary,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
                     }
 
                     uiState.errorMessage != null -> {
-                        uiState.errorMessage?.let { errorTexto ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = uiState.errorMessage ?: "Error al cargar las pistas",
+                                    color = ColorError,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center
+                                )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                Button(
+                                    onClick = {
+                                        viewModel.cargarPistas(deporte)
+                                    }
+                                ) {
+                                    Text("Reintentar")
+                                }
+                            }
+                        }
+                    }
+
+                    uiState.pistas.isEmpty() -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
                             Text(
-                                text = errorTexto,
-                                color = ColorError,
-                                style = MaterialTheme.typography.bodyMedium
+                                text = "No hay pistas disponibles para $deporte",
+                                color = ColorSecondary,
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Center
                             )
                         }
-
                     }
 
                     else -> {
@@ -161,7 +206,8 @@ fun PistasDeporteScreen(
                                         navController.navigate(
                                             ScreenNavigation.DetallePista.crearRuta(
                                                 pista.id,
-                                                nombrePista = pista.nombre)
+                                                nombrePista = pista.nombre
+                                            )
                                         )
                                     }
 
@@ -170,41 +216,6 @@ fun PistasDeporteScreen(
                         }
                     }
                 }
-
-
-//                //Tarjetas de cada pista
-//
-//                Card(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(90.dp),
-//                    shape = RoundedCornerShape(16.dp),
-//                    colors = CardDefaults.cardColors(
-//                        containerColor = TextFieldBackground
-//                    )
-//                ) {
-//                    Column(
-//                        modifier = Modifier
-//                            .fillMaxSize()
-//                            .padding(16.dp),
-//                        verticalArrangement = Arrangement.SpaceBetween
-//                    ) {
-//                        Text(
-//                            text = "Pista tenis 1",
-//                            color = ColorTextPrimary,
-//                            style = MaterialTheme.typography.titleMedium,
-//                            fontWeight = FontWeight.Bold
-//                        )
-//
-//                        Text(
-//                            text = "Cubierta · 20€/hora",
-//                            color = ColorTextSecondary,
-//                            style = MaterialTheme.typography.bodyMedium
-//                        )
-//                    }
-//                }
-
-
             }
         }
         BottomNavBar(

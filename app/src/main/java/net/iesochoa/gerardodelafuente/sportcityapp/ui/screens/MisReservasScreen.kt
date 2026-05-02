@@ -14,6 +14,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,10 +31,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import net.iesochoa.gerardodelafuente.sportcityapp.model.RequestStatus
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.Components.BottomNavBar
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.Components.ReservaItemCard
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.navigation.ScreenNavigation
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.ColorBackground
+import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.ColorError
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.ColorPrimary
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.ColorSecondary
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.ColorTextPrimary
@@ -83,39 +87,87 @@ fun MisReservasScreen(
                 )
                 Spacer(modifier = Modifier.height(24.dp))
 
-                if (uiState.reservas.isEmpty()) {
-                    //si la lista esta vacia
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "No tienes reservas",
-                            color = ColorSecondary,
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                } else {
-                    //muestro listado de reservas
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(15.dp)
+                when (val status = uiState.status) {
 
-                    ) {
-                        items(uiState.reservas) { reserva ->
-                            ReservaItemCard(
-                                reserva = reserva,
-                                onDelete = {
-                                    viewModel.borrarReserva(reserva)
-                                }
-
+                    RequestStatus.Idle,
+                    RequestStatus.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                CircularProgressIndicator(
+                                    color = ColorPrimary
                                 )
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                Text(
+                                    text = "Cargando Reservas.......",
+                                    color = ColorSecondary,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+
+                    RequestStatus.Success -> {
+                        if (uiState.reservas.isEmpty()) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "No tienes reservas",
+                                    color = ColorSecondary,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                items(uiState.reservas) { reserva ->
+                                    ReservaItemCard(
+                                        reserva = reserva,
+                                        onDelete = {
+                                            viewModel.borrarReserva(reserva)
+                                        }
+                                    )
+
+                                }
+                            }
+                        }
+                    }
+
+                    is RequestStatus.Error -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                                Text(
+                                    text = status.message,
+                                    color = ColorError,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                Button(
+                                    onClick = { viewModel.cargarReservas() }
+                                ) {
+                                    Text("Reintentar")
+                                }
+                            }
                         }
                     }
                 }
-
             }
         }
         BottomNavBar(
