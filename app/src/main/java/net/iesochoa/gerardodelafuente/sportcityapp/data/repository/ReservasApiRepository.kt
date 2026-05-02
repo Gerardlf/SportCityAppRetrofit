@@ -13,7 +13,12 @@ class ReservasApiRepository(
     suspend fun addReserva(reserva: Reserva): Reserva {
         return apiService.crearReserva(reserva)
     }
+
     suspend fun getReservasPorUsuario(usuarioId: String): List<Reserva> {
         return apiService.getReservasPorUsuario(usuarioId)
+    }
+
+    suspend fun deleteReserva(id: Int) {
+        apiService.borrarReserva(id)
     }
 }

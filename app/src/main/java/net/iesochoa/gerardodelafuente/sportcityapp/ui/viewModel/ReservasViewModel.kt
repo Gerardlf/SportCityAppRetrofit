@@ -90,8 +90,11 @@ class ReservasViewModel(
     }
 
     fun borrarReserva(reserva: Reserva) {
+        val id = reserva.id ?: return
+
         viewModelScope.launch {
-            reservasRepository.deleteReserva(reserva)
+            reservasApiRepository.deleteReserva(id)
+            cargarReservas()
         }
 
     }
