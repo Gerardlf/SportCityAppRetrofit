@@ -1,5 +1,6 @@
 package net.iesochoa.gerardodelafuente.sportcityapp.ui.screens
 
+import android.widget.Space
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -61,26 +62,46 @@ fun DetallePistaScreen(
 
     val pista = uiState.pistas.firstOrNull { it.id == pistaId }
     //deporte
-    val deporte  =pista?.deporte ?: "Desconocido"
+    val deporte = pista?.deporte ?: "Desconocido"
 
     //para la hora
     var horaSelec by remember { mutableStateOf("12:00") }
+    val horasDisponibles = listOf(
+        "10:00", "11:00", "12:00",
+        "13:00", "14:00", "15:00",
+        "16:00", "17:00", "18:00",
+        "19:00", "20:00", "22:00"
+    )
 
     //fecha
-    data class OpcionFecha(val label: String, val valor:String)
+    data class OpcionFecha(val label: String, val valor: String, val textoVisible: String)
 
     val opcionesFecha = remember {
         val hoy = java.time.LocalDate.now()
-        val formatter = java.time.format.DateTimeFormatter.ofPattern(
+
+        val formatterVisible = java.time.format.DateTimeFormatter.ofPattern(
             "d 'de' MMMM",
             java.util.Locale("es", "ES")
         )
 
-        listOf(
-            OpcionFecha("Hoy", hoy.format(formatter)),
-            OpcionFecha("Mañana", hoy.plusDays(1).format(formatter)),
-            OpcionFecha("Pasado mañana", hoy.plusDays(2).format(formatter))
-        )
+        val formatterApi = java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
+
+        (0..8).map { dias ->
+            val fecha = hoy.plusDays(dias.toLong())
+
+            val label = when (dias) {
+                0 -> "Hoy"
+                1 -> "Mañana"
+                2 -> "Pasado mañana"
+                else -> "+$dias días"
+            }
+
+            OpcionFecha(
+                label = label,
+                valor = fecha.format(formatterApi),
+                textoVisible = fecha.format(formatterVisible)
+            )
+        }
     }
 
     var fechaSeleccionada by remember { mutableStateOf(opcionesFecha[0]) }
@@ -168,71 +189,48 @@ fun DetallePistaScreen(
 
             //aqui pondre la fecha
             Text(
-                text = "Fecha seleccionada: ${fechaSeleccionada.valor}",
+                text = "Fecha seleccionada: ${fechaSeleccionada.textoVisible}",
                 color = ColorTextSecondary,
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                opcionesFecha.forEach { opcion ->
-                    HoraChip(
-                        text = opcion.label,
-                        selected = fechaSeleccionada == opcion,
-                        onClick = { fechaSeleccionada = opcion }
-                    )
+            opcionesFecha.chunked(3).forEach { filaFechas ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    filaFechas.forEach { opcion ->
+                        HoraChip(
+                            text = opcion.label,
+                            selected = fechaSeleccionada == opcion,
+                            onClick = { fechaSeleccionada = opcion },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            //  HORAS DISPONIBLES peroo de momento solo diseño
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                HoraChip(
-                    text = "10:00",
-                    selected = horaSelec == "10:00",
-                    onClick = { horaSelec = "10:00" }
-                )
-                HoraChip(
-                    text = "12:00",
-                    selected = horaSelec == "12:00",
-                    onClick = { horaSelec = "12:00" }
-                )
-                HoraChip(
-                    text = "13:00",
-                    selected = horaSelec == "13:00",
-                    onClick = { horaSelec = "13:00" }
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                HoraChip(
-                    text = "14:00",
-                    selected = horaSelec == "14:00",
-                    onClick = { horaSelec = "14:00" }
-                )
-                HoraChip(
-                    text = "15:00",
-                    selected = horaSelec == "15:00",
-                    onClick = { horaSelec = "15:00" }
-                )
-                HoraChip(
-                    text = "16:00",
-                    selected = horaSelec == "16:00",
-                    onClick = { horaSelec = "16:00" }
-                )
+            //  HORAS DISPONIBLES
+            horasDisponibles.chunked(3).forEach { filasHoras ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    filasHoras.forEach { hora ->
+                        HoraChip(
+                            text = hora,
+                            selected = horaSelec == hora,
+                            onClick = { horaSelec = hora },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
             Spacer(modifier = Modifier.height(40.dp))
@@ -242,7 +240,7 @@ fun DetallePistaScreen(
                         ScreenNavigation.ReservaForm.createRoute(
                             pistaId,
                             hora = horaSelec,
-                            nombrePista=nombrePista,
+                            nombrePista = nombrePista,
                             fecha = fechaSeleccionada.valor,
                             deporte = deporte
                         )
