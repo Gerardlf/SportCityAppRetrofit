@@ -70,7 +70,7 @@ class ReservasViewModel(
                         status = RequestStatus.Success
                     )
                 }
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 _uiState.update { actual ->
                     actual.copy(
                         status = RequestStatus.Error("No se pudieron cargar las reservas. Render puede estar iniciandose...")
@@ -90,10 +90,19 @@ class ReservasViewModel(
         nombreCliente: String,
         telefonoCliente: String,
         comentario: String?,
-        deporte: String
+        deporte: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
     ) {
         //obtengo el usuario de firebase
-        val usuarioId = auth.currentUser?.uid ?: return
+        val usuarioId = auth.currentUser?.uid
+
+        if (usuarioId == null) {
+            onError("No Hay Usuario Iniciado")
+            return
+        }
+
+
         val reserva = Reserva(
             id = null,
             pistaId = pistaId,
@@ -108,7 +117,21 @@ class ReservasViewModel(
         )
         //añado reserva
         viewModelScope.launch {
-            reservasApiRepository.addReserva(reserva)
+            try {
+                reservasApiRepository.addReserva(reserva)
+                onSuccess()
+
+            } catch (e: retrofit2.HttpException) {
+
+                if (e.code() == 409){
+                    onError("Esta pista ya está reservada para esa fecha y hora. Prueba con otra hora.")
+                }
+                else{
+                    onError("No se pudo crear la reserva. Inténtalo de nuevo.")
+                }
+            }catch (e: Exception){
+                onError("No se pudo conectar con la API. Render puede estar iniciándose.")
+            }
         }
     }
 

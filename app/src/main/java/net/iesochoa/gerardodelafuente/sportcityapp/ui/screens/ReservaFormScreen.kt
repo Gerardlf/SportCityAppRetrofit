@@ -48,6 +48,7 @@ import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.TextFieldBackground
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.TextFieldBorder
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.theme.TextFieldText
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.viewModel.ReservasViewModel
+
 // pantalla de formulario de la reserva
 @Composable
 fun ReservaFormScreen(
@@ -66,6 +67,7 @@ fun ReservaFormScreen(
     var comentario by remember { mutableStateOf("") }
     var nombreError by remember { mutableStateOf<String?>(null) }
     var telefonoError by remember { mutableStateOf<String?>(null) }
+    var reservaError by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -217,12 +219,25 @@ fun ReservaFormScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        reservaError?.let { errorText ->
+            Text(
+                text = errorText,
+                color = ColorError,
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
         Button(
             onClick = {
 
                 //reinicio los errores
                 nombreError = null
                 telefonoError = null
+                reservaError = null
 
                 var hayUnError = false
 
@@ -248,15 +263,22 @@ fun ReservaFormScreen(
                     nombreCliente = nombre,
                     telefonoCliente = telefono,
                     comentario = comentario.ifBlank { null },
-                    deporte = deporte
+                    deporte = deporte,
+                    onSuccess = {
+                        navController.navigate(
+                            ScreenNavigation.ConfirmacionReserva.crearRuta(
+                                deporte = deporte,
+                                pistaNombre = nombrePista,
+                                hora = horaSeleccionada
+                            )
+                        )
+                    },
+                    onError = { mensaje ->
+                        reservaError = mensaje
+                    }
+
                 )
-                navController.navigate(
-                    ScreenNavigation.ConfirmacionReserva.crearRuta(
-                        deporte = deporte,
-                        pistaNombre = nombrePista,
-                        hora = horaSeleccionada
-                    )
-                )
+
             },
             modifier = Modifier
                 .fillMaxWidth()
