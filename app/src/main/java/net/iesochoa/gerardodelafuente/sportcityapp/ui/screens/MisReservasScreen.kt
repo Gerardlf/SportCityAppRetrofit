@@ -18,10 +18,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -31,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import net.iesochoa.gerardodelafuente.sportcityapp.model.RequestStatus
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.Components.BottomNavBar
 import net.iesochoa.gerardodelafuente.sportcityapp.ui.Components.ReservaItemCard
@@ -49,134 +55,156 @@ fun MisReservasScreen(
     viewModel: ReservasViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(ColorBackground)
-    ) {
-        Box(
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
+        containerColor = ColorBackground
+    ) { paddingValues ->
+        Column(
             modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
+                .fillMaxSize()
+                .background(ColorBackground)
+                .padding(paddingValues)
         ) {
-            Column(
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 24.dp, vertical = 24.dp)
+                    .weight(1f)
+                    .fillMaxWidth()
             ) {
-                //flecha
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Volver",
-                    tint = ColorPrimary,
+                Column(
                     modifier = Modifier
-                        .clickable { navController.popBackStack() }
-                )
+                        .fillMaxSize()
+                        .padding(horizontal = 24.dp, vertical = 24.dp)
+                ) {
+                    //flecha
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Volver",
+                        tint = ColorPrimary,
+                        modifier = Modifier
+                            .clickable { navController.popBackStack() }
+                    )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                //titulo
-                Text(
-                    text = "Mis Reservas",
-                    color = ColorTextPrimary,
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(24.dp))
+                    //titulo
+                    Text(
+                        text = "Mis Reservas",
+                        color = ColorTextPrimary,
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                when (val status = uiState.status) {
+                    when (val status = uiState.status) {
 
-                    RequestStatus.Idle,
-                    RequestStatus.Loading -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                CircularProgressIndicator(
-                                    color = ColorPrimary
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                Text(
-                                    text = "Cargando Reservas.......",
-                                    color = ColorSecondary,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-                        }
-                    }
-
-                    RequestStatus.Success -> {
-                        if (uiState.reservas.isEmpty()) {
+                        RequestStatus.Idle,
+                        RequestStatus.Loading -> {
                             Box(
                                 modifier = Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(
-                                    text = "No tienes reservas",
-                                    color = ColorSecondary,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-                        } else {
-                            LazyColumn(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                items(uiState.reservas) { reserva ->
-                                    ReservaItemCard(
-                                        reserva = reserva,
-                                        onDelete = {
-                                            viewModel.borrarReserva(reserva)
-                                        }
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    CircularProgressIndicator(
+                                        color = ColorPrimary
                                     )
+                                    Spacer(modifier = Modifier.height(16.dp))
 
+                                    Text(
+                                        text = "Cargando Reservas.......",
+                                        color = ColorSecondary,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        textAlign = TextAlign.Center
+                                    )
                                 }
                             }
                         }
-                    }
 
-                    is RequestStatus.Error -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
-                                Text(
-                                    text = status.message,
-                                    color = ColorError,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                Button(
-                                    onClick = { viewModel.cargarReservas() }
+                        RequestStatus.Success -> {
+                            if (uiState.reservas.isEmpty()) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
                                 ) {
-                                    Text("Reintentar")
+                                    Text(
+                                        text = "No tienes reservas",
+                                        color = ColorSecondary,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            } else {
+                                LazyColumn(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                                ) {
+                                    items(uiState.reservas) { reserva ->
+                                        ReservaItemCard(
+                                            reserva = reserva,
+                                            onDelete = {
+                                                viewModel.borrarReserva(
+                                                    reserva = reserva,
+                                                    onSuccess = {
+                                                        scope.launch {
+                                                            snackbarHostState.showSnackbar("Reserva eliminada")
+                                                        }
+                                                    },
+                                                    onError = { mensaje ->
+                                                        scope.launch {
+                                                            snackbarHostState.showSnackbar(mensaje)
+                                                        }
+                                                    }
+                                                )
+                                            }
+                                        )
+
+                                    }
+                                }
+                            }
+                        }
+
+                        is RequestStatus.Error -> {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                                    Text(
+                                        text = status.message,
+                                        color = ColorError,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+
+                                    Button(
+                                        onClick = { viewModel.cargarReservas() }
+                                    ) {
+                                        Text("Reintentar")
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-        BottomNavBar(
-            navController = navController,
-            selectedScreen = ScreenNavigation.MisReservas,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 40.dp)
-        )
+            BottomNavBar(
+                navController = navController,
+                selectedScreen = ScreenNavigation.MisReservas,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 40.dp)
+            )
 
+        }
     }
 }

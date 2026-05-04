@@ -13,11 +13,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -85,19 +88,16 @@ fun DetallePistaScreen(
         )
 
         val formatterApi = java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
+        val formatterCorto = java.time.format.DateTimeFormatter.ofPattern(
+            "d/M",
+            java.util.Locale("es", "ES")
+        )
 
         (0..8).map { dias ->
             val fecha = hoy.plusDays(dias.toLong())
 
-            val label = when (dias) {
-                0 -> "Hoy"
-                1 -> "Mañana"
-                2 -> "Pasado mañana"
-                else -> "+$dias días"
-            }
-
             OpcionFecha(
-                label = label,
+                label = fecha.format(formatterCorto),
                 valor = fecha.format(formatterApi),
                 textoVisible = fecha.format(formatterVisible)
             )
@@ -116,12 +116,13 @@ fun DetallePistaScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(180.dp)
+                .height(120.dp)
                 .background(ColorPrimary)
         )
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp, vertical = 20.dp)
         ) {
             //flichita atras
@@ -211,11 +212,30 @@ fun DetallePistaScreen(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
+            Spacer(modifier = Modifier.height(8.dp))
 
+            HorizontalDivider()
 
             Spacer(modifier = Modifier.height(24.dp))
 
             //  HORAS DISPONIBLES
+
+            Text(
+                text = "Hora",
+                color = ColorTextPrimary,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Hora seleccionada: $horaSelec",
+                color = ColorTextSecondary,
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             horasDisponibles.chunked(3).forEach { filasHoras ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -262,7 +282,9 @@ fun DetallePistaScreen(
                     fontWeight = FontWeight.Bold
                 )
             }
+            Spacer(modifier = Modifier.height(32.dp))
         }
+
     }
 }
 

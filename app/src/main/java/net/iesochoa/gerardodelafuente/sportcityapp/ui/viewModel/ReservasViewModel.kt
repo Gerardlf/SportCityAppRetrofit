@@ -135,13 +135,26 @@ class ReservasViewModel(
         }
     }
 
-    fun borrarReserva(reserva: Reserva) {
-        val id = reserva.id ?: return
+    fun borrarReserva(
+        reserva: Reserva,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        val id = reserva.id
 
-        viewModelScope.launch {
-            reservasApiRepository.deleteReserva(id)
-            cargarReservas()
+        if (id == null) {
+            onError("No se pudo borrar la reserva")
+            return
         }
 
+        viewModelScope.launch {
+            try {
+                reservasApiRepository.deleteReserva(id)
+                cargarReservas()
+                onSuccess()
+            } catch (e: Exception) {
+                onError("No se pudo borrar la reserva. Inténtalo de nuevo.")
+            }
+        }
     }
 }
